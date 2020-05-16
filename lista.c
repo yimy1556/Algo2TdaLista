@@ -15,18 +15,18 @@
 
 typedef struct nodo{
     void* dato;
-    nodo_t* sig_nodo;
+    struct nodo* sig_nodo;
 }nodo_t;
 
-typedef struct lista{
+struct lista{
     nodo_t* primera_nodo;
     nodo_t* ultimo_nodo;
     size_t cantidad;
-}lista_t;
+};
 
-typedef struct iterador{
+struct lista_iterador{
     nodo_t* nodo_actual;
-}lista_iterador_t;
+};
 
 nodo_t* nodo_crear(void* elemento, nodo_t* sig_nodo){
     
@@ -41,7 +41,7 @@ nodo_t* nodo_crear(void* elemento, nodo_t* sig_nodo){
 }
 
 
-nodo_t** posicionador(nodo_t** nodo, int posicion){
+nodo_t** posicionador(nodo_t** nodo, size_t posicion){
 
     if(posicion == CANT_INICIAL)
         return nodo;      
@@ -63,6 +63,8 @@ int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
     *posicion_a_insertar = nodo_aux; 
     lista->cantidad++;    
+
+    return EXITO;
 }
 
 
@@ -97,7 +99,7 @@ void recorrer_nodos(nodo_t* nodos, void (*funcion)(void*, void*), void *contexto
     void* elemento = (modo == REMOVE)? nodos:nodos->dato; 
     
     funcion(elemento, contexto);
-    recorrer_nodos(nodos->sig_nodo, funcion, contexto, modo);
+    recorrer_nodos(nodo_aux, funcion, contexto, modo);
 }
 
 
@@ -152,7 +154,7 @@ int lista_borrar(lista_t* lista){
     
     if (!lista ) return ERROR;
     
-    int ante_ultimo = lista->cantidad - ANTE_ULTIMO; 
+    size_t ante_ultimo = lista->cantidad - ANTE_ULTIMO; 
 
     nodo_t** nodo_aux = posicionador(&(lista->primera_nodo), ante_ultimo);
     
@@ -172,7 +174,7 @@ int lista_borrar(lista_t* lista){
 
 int lista_borrar_de_posicion(lista_t* lista, size_t posicion){
 
-    int posicion_final = lista_elementos(lista);
+    size_t posicion_final = lista_elementos(lista);
     
     int estado = (posicion >= (--posicion_final))? 
         lista_borrar(lista):borrar_de_posicion(lista, posicion);
@@ -202,7 +204,7 @@ void* lista_ultimo(lista_t* lista){
 
 bool lista_vacia(lista_t* lista){
 
-    return (CANT_INICIAL == lista_elemento(lista));
+    return (CANT_INICIAL == lista_elementos(lista));
 
 }
 
@@ -256,6 +258,8 @@ void lista_destruir(lista_t* lista){
     free(lista);
 }
 
+/// Iterador Externo 
+
 lista_iterador_t* lista_iterador_crear(lista_t* lista){
     
     if (!lista) return NULL;
@@ -286,7 +290,6 @@ void* lista_iterador_siguiente(lista_iterador_t* iterador){
     return iterador->nodo_actual->dato; 
 }
 
-
 void lista_iterador_destruir(lista_iterador_t* iterador){
 
     free(iterador);
@@ -294,15 +297,10 @@ void lista_iterador_destruir(lista_iterador_t* iterador){
 }
 
 /// iterador Interno de la lista
-/*
- * Iterador interno. Recorre la lista e invoca la funcion con cada
- * elemento de la misma.
- */
+
 void lista_con_cada_elemento(lista_t* lista, void (*funcion)(void*, void*), void *contexto){
     
     if (!lista ) return;
 
     recorrer_nodos(lista->primera_nodo, funcion, contexto, PROC_ELEMENTO);   
 }
-
-
