@@ -10,6 +10,8 @@
 #define INICIO 1
 #define ANTE_ULTIMO 2
 #define POSICION_INICIAL 0
+#define REMOVE 'R'
+#define PROC_ELEMENTO 'P'
 
 typedef struct nodo{
     void* dato;
@@ -51,6 +53,8 @@ nodo_t** posicionador(nodo_t** nodo, int posicion){
 
 int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
+    if(!lista) return ERROR;
+    
     nodo_t** posicion_a_insertar = posicionador(&(lista->primera_nodo), posicion);   
 
     nodo_t* nodo_aux = nodo_crear(elemento, *posicion_a_insertar);
@@ -64,6 +68,8 @@ int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
 int borrar_de_posicion(lista_t* lista, size_t posicion){
 
+    if (!lista) return ERROR;
+
     nodo_t** nodo_aux = posicionador(&(lista->primera_nodo),posicion);
 
     nodo_t* nodo_a_eliminar = *nodo_aux;
@@ -75,14 +81,27 @@ int borrar_de_posicion(lista_t* lista, size_t posicion){
     return  EXITO;
 }
 
-void destruir_nodos(nodo_t* nodos){
 
-    if (!nodos) return;
+void destruir_nodo(void* nodo,void* no_usado){
     
-    destruir_nodos(nodos->sig_nodo);
-    free(nodos);
+    no_usado = no_usado;
+    free(nodo);
 
 }
+ 
+void recorrer_nodos(nodo_t* nodos, void (*funcion)(void*, void*), void *contexto ,char modo){
+
+    if (!nodos || !funcion) return;
+    
+    nodo_t* nodo_aux = nodos->sig_nodo;
+    void* elemento = (modo == REMOVE)? nodos:nodos->dato; 
+    
+    funcion(elemento, contexto);
+    recorrer_nodos(nodos->sig_nodo, funcion, contexto, modo);
+}
+
+
+
 
 /// Operaciones De lista. 
 
@@ -122,8 +141,6 @@ int lista_insertar(lista_t *lista, void *elemento){
 
 int lista_insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
     
-    if (!lista) return ERROR;
-
     int estado = (posicion >= lista_elementos(lista))?
         lista_insertar(lista,elemento):insertar_en_posicion(lista, elemento, posicion);        
 
@@ -155,8 +172,6 @@ int lista_borrar(lista_t* lista){
 
 int lista_borrar_de_posicion(lista_t* lista, size_t posicion){
 
-    if (!lista) return ERROR;
-
     int posicion_final = lista_elementos(lista);
     
     int estado = (posicion >= (--posicion_final))? 
@@ -179,7 +194,7 @@ void* lista_elemento_en_posicion(lista_t* lista, size_t posicion){
 
 void* lista_ultimo(lista_t* lista){
 
-    if (!lista || lista_vacia(lista)) return NULL;
+    if (lista_vacia(lista)) return NULL;
 
     return lista->ultimo_nodo->dato;
 
@@ -198,16 +213,13 @@ size_t lista_elementos(lista_t* lista){
 }
 
 int lista_apilar(lista_t* lista, void* elemento){
-    
-    if (!lista) return ERROR;
 
     return lista_insertar(lista, elemento);
+
 }
 
 
 int lista_desapilar(lista_t* lista){
-    
-    if (!lista) return ERROR;
 
     return lista_borrar(lista);
 }
@@ -239,7 +251,7 @@ void lista_destruir(lista_t* lista){
 
     if(!lista) return;
 
-    destruir_nodos(lista->primera_nodo);
+    recorrer_nodos(lista->primera_nodo, destruir_nodo, NULL, REMOVE);
 
     free(lista);
 }
@@ -280,4 +292,17 @@ void lista_iterador_destruir(lista_iterador_t* iterador){
     free(iterador);
 
 }
+
+/// iterador Interno de la lista
+/*
+ * Iterador interno. Recorre la lista e invoca la funcion con cada
+ * elemento de la misma.
+ */
+void lista_con_cada_elemento(lista_t* lista, void (*funcion)(void*, void*), void *contexto){
+    
+    if (!lista ) return;
+
+    recorrer_nodos(lista->primera_nodo, funcion, contexto, PROC_ELEMENTO);   
+}
+
 
