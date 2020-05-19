@@ -40,7 +40,6 @@ nodo_t* nodo_crear(void* elemento, nodo_t* sig_nodo){
     return nodo;
 }
 
-
 nodo_t** posicionador(nodo_t** nodo, size_t posicion){
 
     if(posicion == CANT_INICIAL)
@@ -67,7 +66,6 @@ int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
     return EXITO;
 }
 
-
 int borrar_de_posicion(lista_t* lista, size_t posicion){
 
     if (!lista) return ERROR;
@@ -80,15 +78,13 @@ int borrar_de_posicion(lista_t* lista, size_t posicion){
     
     free(nodo_a_eliminar);
 
+    lista->cantidad--;
     return  EXITO;
 }
 
-
 void destruir_nodo(void* nodo,void* no_usado){
-    
     no_usado = no_usado;
     free(nodo);
-
 }
  
 void recorrer_nodos(nodo_t* nodos, void (*funcion)(void*, void*), void *contexto ,char modo){
@@ -102,9 +98,6 @@ void recorrer_nodos(nodo_t* nodos, void (*funcion)(void*, void*), void *contexto
     recorrer_nodos(nodo_aux, funcion, contexto, modo);
 }
 
-
-
-
 /// Operaciones De lista. 
 
 lista_t* lista_crear(){
@@ -116,30 +109,27 @@ lista_t* lista_crear(){
     lista->primera_nodo = NULL ;
     lista->ultimo_nodo = NULL;
     lista->cantidad = CANT_INICIAL;
-
     return lista;
 }
-
 
 int lista_insertar(lista_t *lista, void *elemento){
     
     if(!lista) return ERROR;
     
-    nodo_t* nodo_aux = nodo_crear(elemento, NULL);
+    nodo_t* nodo = nodo_crear(elemento, NULL); 
+    if(!nodo) return ERROR;
 
-    if(!nodo_aux) return ERROR;
+    if(!lista->ultimo_nodo)
+        lista->primera_nodo = nodo;
+
+    if (lista->ultimo_nodo)
+        lista->ultimo_nodo->sig_nodo = nodo;
     
-    if(lista->cantidad == CANT_INICIAL)
-        lista->primera_nodo = nodo_aux;
-    
-    lista->ultimo_nodo->sig_nodo = nodo_aux;
-    lista->ultimo_nodo = nodo_aux;
-    
+    lista->ultimo_nodo = nodo;
     lista->cantidad++;
             
     return EXITO;
 }
-
 
 int lista_insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
     
@@ -149,35 +139,26 @@ int lista_insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
     return estado;
 }
 
-
 int lista_borrar(lista_t* lista){
     
-    if (!lista ) return ERROR;
-    
-    size_t ante_ultimo = lista->cantidad - ANTE_ULTIMO; 
+    if (!lista || lista_vacia(lista)) return ERROR;
 
+    size_t ante_ultimo = (lista_elementos(lista) == 1)? 0:lista->cantidad - ANTE_ULTIMO; 
     nodo_t** nodo_aux = posicionador(&(lista->primera_nodo), ante_ultimo);
     
     free((*nodo_aux)->sig_nodo);
 
     lista->ultimo_nodo = *nodo_aux;
-    
-    if(lista->cantidad == INICIO) 
-        lista->primera_nodo = lista->ultimo_nodo;
-    
     lista->ultimo_nodo->sig_nodo = NULL;
     lista->cantidad--;
 
     return EXITO;
 }
 
-
 int lista_borrar_de_posicion(lista_t* lista, size_t posicion){
-
-    size_t posicion_final = lista_elementos(lista);
     
-    int estado = (posicion >= (--posicion_final))? 
-        lista_borrar(lista):borrar_de_posicion(lista, posicion);
+    int estado = (++posicion >= lista_elementos(lista))? 
+        lista_borrar(lista):borrar_de_posicion(lista, --posicion);
 
     return estado;
 }
@@ -191,7 +172,6 @@ void* lista_elemento_en_posicion(lista_t* lista, size_t posicion){
     nodo_t** nodo_aux = posicionador(&(lista->primera_nodo), posicion);
 
     return (*nodo_aux)->dato;
-
 }
 
 void* lista_ultimo(lista_t* lista){
@@ -199,27 +179,22 @@ void* lista_ultimo(lista_t* lista){
     if (lista_vacia(lista)) return NULL;
 
     return lista->ultimo_nodo->dato;
-
 }
 
 bool lista_vacia(lista_t* lista){
 
     return (CANT_INICIAL == lista_elementos(lista));
-
 }
 
 size_t lista_elementos(lista_t* lista){
 
     return (!lista)? CANT_INICIAL:lista->cantidad;    
-
 }
 
 int lista_apilar(lista_t* lista, void* elemento){
 
     return lista_insertar(lista, elemento);
-
 }
-
 
 int lista_desapilar(lista_t* lista){
 
@@ -263,13 +238,16 @@ void lista_destruir(lista_t* lista){
 lista_iterador_t* lista_iterador_crear(lista_t* lista){
     
     if (!lista) return NULL;
-
     lista_iterador_t* iterador = malloc(sizeof(lista_iterador_t));
-
-    if (!iterador) return NULL;
-
-    iterador->nodo_actual = lista->primera_nodo;
-
+    if(!iterador) return NULL;
+    
+    iterador->nodo_actual = nodo_crear(NULL,lista->primera_nodo);    
+    
+    if (!(iterador->nodo_actual)){
+        free(iterador);
+        return NULL;
+    }
+    
     return iterador;
 }
 
@@ -283,7 +261,7 @@ void* lista_iterador_siguiente(lista_iterador_t* iterador){
 
     if (!lista_iterador_tiene_siguiente(iterador)) return NULL;
 
-    nodo_t* nodo_aux = iterador->nodo_actual;
+    nodo_t* nodo_aux = iterador->nodo_actual->sig_nodo;
 
     iterador->nodo_actual = nodo_aux;
     

@@ -1,4 +1,4 @@
-CC = gcc *.c -o
+CC = gcc lista.c lista.h lista_pruebas.c pruebas.h pruebas.c -o
 CFLAGS = -g -std=c99 -Wall -Wconversion -Wtype-limits -pedantic -Werror -O0
 VALGRIND = valgrind --leak-check=full --track-origins=yes --show-reachable=yes
 EXECUTABLE = pruebas
@@ -19,9 +19,11 @@ valgrind:compilar
 	$(VALGRIND) ./$(EXECUTABLE)
 
 compilar:
-
 	clear
 	$(CC) $(EXECUTABLE) $(CFLAGS)
+
+iniciar:compilar
+	./$(EXECUTABLE)
 
 borrar:
 
