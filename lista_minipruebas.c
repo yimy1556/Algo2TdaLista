@@ -12,7 +12,7 @@ void probar_operaciones_lista(){
  lista_t* lista = lista_crear();
   
   char a='a', b='b', c='c', d='d', w='w';
-  
+
   lista_insertar(lista, &a);
   lista_insertar(lista, &c);
   lista_insertar_en_posicion(lista, &d, 100);
@@ -61,6 +61,11 @@ void probar_operaciones_cola(){
   printf("\n");
   lista_destruir(cola);
 }
+void imprimir(void* el, void* ele){
+
+  printf("%c", *(char*)el);
+
+}
 
 void probar_operaciones_pila(){
   lista_t* pila = lista_crear();
@@ -70,10 +75,9 @@ void probar_operaciones_pila(){
     printf("Apilo %c\n", algo[i]);
     lista_apilar(pila, &algo[i]);
   }
-
   printf("\nDesapilo y muestro los elementos apilados: ");
   while(!lista_vacia(pila)){
-    printf("%c", *(char*)lista_tope(pila));
+    printf("%c", *(char*)lista_tope(pila)); 
     lista_desapilar(pila);
   }
   printf("\n");
