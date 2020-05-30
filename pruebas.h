@@ -2,6 +2,7 @@
 #define __PRUEBAS_H__
 #include "lista.h"
 
+void prueva_catedra(lista_t* lista);
 void prueva_lista_vacia(lista_t* lista);
 void pruevas_insertar_posicion(lista_t* lista);
 void pruevas_insertar(lista_t* lista);
