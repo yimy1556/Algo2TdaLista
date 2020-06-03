@@ -72,8 +72,8 @@ void probar_operaciones_pila(){
   char* algo="somtirogla";
 
   for(int i=0;algo[i]!= 0;i++){
-    printf("Apilo %c\n", algo[i]);
     lista_apilar(pila, &algo[i]);
+    printf("%c =E %c \n", *(char*)lista_tope(pila) ,algo[i]); 
   }
   printf("\nDesapilo y muestro los elementos apilados: ");
   while(!lista_vacia(pila)){
