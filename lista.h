@@ -114,31 +114,30 @@ void lista_destruir(lista_t* lista);
  * elementos de la lista).
  *
  * Devuelve el puntero al iterador creado o NULL en caso de error.
- */
+ *
 lista_iterador_t* lista_iterador_crear(lista_t* lista);
-
+*/
 /*
  * Devuelve true si hay mas elementos sobre los cuales iterar o false
  * si no hay mas.
- */
+ 
 bool lista_iterador_tiene_siguiente(lista_iterador_t* iterador);
-
+*/
 /*
  * Devuelve el próximo elemento disponible en la iteración.
  * En caso de error devuelve NULL.
- */
+ *
 void* lista_iterador_siguiente(lista_iterador_t* iterador);
-
+*/
 /*
  * Libera la memoria reservada por el iterador.
- */
+ *
 void lista_iterador_destruir(lista_iterador_t* iterador);
-
+*/
 /*
  * Iterador interno. Recorre la lista e invoca la funcion con cada
  * elemento de la misma.
- */
-void lista_con_cada_elemento(lista_t* lista, void (*funcion)(void*, void*), void *contexto);
-
-
+ *
+void lista_con_cada_elemento(lista_t* lista, void (*funcion)(void*, void*), void *contexto);/
+*/
 #endif /* __LISTA_H__ */

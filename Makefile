@@ -1,8 +1,8 @@
-CC = gcc lista.c lista.h lista_pruebas.c pruebas.h pruebas.c -o
+CC = gcc lista.c lista.h lista_pruebas.c -o
 CFLAGS = -g -std=c99 -Wall -Wconversion -Wtype-limits -pedantic -Werror -O0
 VALGRIND = valgrind --leak-check=full --track-origins=yes --show-reachable=yes
 EXECUTABLE = pruebas
-OBJET = lista.c lista.h lista_minipruebas.c
+OBJET = lista.c lista.h lista_pruebas.c tda_lista.pdf README.txt Makefile
 ZIP = zip
 NAMETP = TDA_LISTA.zip
 
@@ -23,6 +23,9 @@ compilar:
 	$(CC) $(EXECUTABLE) $(CFLAGS)
 
 iniciar:compilar
+	./$(EXECUTABLE)
+
+executar:
 	./$(EXECUTABLE)
 
 borrar:

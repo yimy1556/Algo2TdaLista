@@ -28,6 +28,7 @@ struct lista{
 struct lista_iterador{
     nodo_t* nodo_actual;
 };
+
 /*
  * Crea un nodo con un elementon guardado.
  * y con la dirrecion de otro nodo.
@@ -35,7 +36,6 @@ struct lista_iterador{
  * POST: Devuelve nodo_t* si se puso crear un nodo.
  * delo contrario devuelve NULL.
 */
-
 nodo_t* nodo_crear(void* elemento, nodo_t* sig_nodo){
     
     nodo_t* nodo = malloc(sizeof(nodo_t));
@@ -47,12 +47,12 @@ nodo_t* nodo_crear(void* elemento, nodo_t* sig_nodo){
     
     return nodo;
 }
+
 /*
  * Busca el nodo el la posicion recivida.
  * PRE: Recive la nodo_t**  y una posicion.
  * POST: devuelve nodo_t** de la posicion pedida. 
  */
-
 nodo_t** posicionador(nodo_t** nodo, size_t posicion){
 
     if(posicion == CANT_INICIAL)
@@ -67,7 +67,6 @@ nodo_t** posicionador(nodo_t** nodo, size_t posicion){
  * PRE: ----
  * POST: Devuelve 0 si pudo insertar o -1 si no pudo.
  */
-
 int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
     nodo_t** posicion_a_insertar = posicionador(&(lista->primera_nodo), posicion);   
@@ -80,6 +79,7 @@ int insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
     return EXITO;
 }
+
 /*
  * borra de la lista el elemento que se encuentra en la posición
  * indicada.
@@ -102,7 +102,6 @@ int borrar_de_posicion(lista_t* lista, size_t posicion){
  * PRE:----
  * POST:----
  */
-
 void destruir_nodos(nodo_t* nodos){
    
     if(!nodos)return;
@@ -130,8 +129,9 @@ int lista_insertar(lista_t *lista, void *elemento){
     nodo_t* nodo = nodo_crear(elemento, NULL); 
     
     if(!nodo) return ERROR;
-    if(lista_vacia(lista)) lista->primera_nodo = nodo;
-    if(!lista_vacia(lista)) lista->ultimo_nodo->sig_nodo = nodo;
+   
+    (lista_vacia(lista))? (lista->primera_nodo = nodo):
+        (lista->ultimo_nodo->sig_nodo = nodo);
     
     lista->ultimo_nodo = nodo;
     lista->cantidad++;
@@ -143,8 +143,8 @@ int lista_insertar_en_posicion(lista_t *lista, void *elemento, size_t posicion){
 
     if(!lista) return ERROR;
 
-    int estado = (posicion >= lista_elementos(lista))?
-        lista_insertar(lista,elemento):insertar_en_posicion(lista, elemento, posicion);        
+    int estado = (posicion >= lista_elementos(lista))?lista_insertar(lista,elemento)
+        :insertar_en_posicion(lista, elemento, posicion);        
 
     return estado;
 }
@@ -201,7 +201,7 @@ bool lista_vacia(lista_t* lista){
 
 size_t lista_elementos(lista_t* lista){
 
-    return (!lista)? CANT_INICIAL:lista->cantidad;    
+    return (lista)? lista->cantidad:CANT_INICIAL;    
 }
 
 int lista_apilar(lista_t* lista, void* elemento){
@@ -239,6 +239,7 @@ void* lista_primero(lista_t* lista){
 void lista_destruir(lista_t* lista){
 
     if(!lista) return;
+    
     destruir_nodos(lista->primera_nodo);
     free(lista);
 }
